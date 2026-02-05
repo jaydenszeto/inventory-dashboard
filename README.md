@@ -4,7 +4,8 @@ A full-stack inventory management system for Open Project.
 
 ## Live Demo
 
-- **App URL:** [Add your Render URL here]
+- **App URL:** https://inventory-dashboard-yjcw.onrender.com
+- **API Base:** https://inventory-dashboard-yjcw.onrender.com/api
 
 ## Features
 
