@@ -1,0 +1,5 @@
+scikit-learn
+Pillow
+numpy
+pandas
+requests

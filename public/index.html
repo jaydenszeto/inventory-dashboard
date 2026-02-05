@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>inventory dashboard</title>
+    <script
+      src="https://unpkg.com/react@18/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        font-family: "IBM Plex Mono", monospace;
+        color: rgba(255, 255, 255, 0.87);
+        background-color: #000000;
+      }
+
+      body {
+        font-family: "IBM Plex Mono", monospace;
+        background: #000000;
+        color: rgba(255, 255, 255, 0.87);
+        min-height: 100vh;
+      }
+
+      .brand-title {
+        font-size: 3rem;
+        font-weight: 300;
+        letter-spacing: 0.1rem;
+        color: white;
+        text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        background: linear-gradient(
+          142deg,
+          #ffeee2 0%,
+          #eec9b0 40%,
+          #ffffff 60%,
+          #efb496 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .brand-subtitle {
+        font-size: 0.9rem;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.6);
+        letter-spacing: 0.05rem;
+      }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        transition: all 0.3s ease;
+      }
+
+      .glass-card:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+
+      select,
+      input[type="text"],
+      input[type="number"] {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.9);
+        font-family: "IBM Plex Mono", monospace;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        width: 100%;
+      }
+
+      select:focus,
+      input[type="text"]:focus,
+      input[type="number"]:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      select option {
+        background: #1a1a1a;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      input::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+      }
+
+      .label-text {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.85rem;
+        letter-spacing: 0.03rem;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .action-button {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.95);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.9rem;
+        letter-spacing: 0.05rem;
+        padding: 14px 24px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        width: 100%;
+      }
+
+      .action-button:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.25);
+        transform: translateY(-1px);
+      }
+
+      .action-button:active {
+        transform: translateY(0);
+      }
+
+      .action-button.secondary {
+        padding: 8px 16px;
+        font-size: 0.75rem;
+        width: auto;
+      }
+
+      .action-button.danger {
+        border-color: rgba(255, 100, 100, 0.3);
+      }
+
+      .action-button.danger:hover {
+        background: rgba(255, 100, 100, 0.15);
+        border-color: rgba(255, 100, 100, 0.5);
+      }
+
+      .item-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 12px;
+        transition: all 0.3s ease;
+      }
+
+      .item-card:hover {
+        border-color: rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .item-name {
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 1rem;
+        font-weight: 500;
+        letter-spacing: 0.03rem;
+      }
+
+      .item-meta {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.8rem;
+        margin-top: 6px;
+      }
+
+      .category-badge {
+        display: inline-block;
+        background: rgba(255, 238, 226, 0.1);
+        border: 1px solid rgba(255, 238, 226, 0.2);
+        color: rgba(255, 238, 226, 0.9);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        letter-spacing: 0.05rem;
+        text-transform: lowercase;
+      }
+
+      .quantity-badge {
+        display: inline-block;
+        background: rgba(130, 200, 130, 0.1);
+        border: 1px solid rgba(130, 200, 130, 0.2);
+        color: rgba(130, 200, 130, 0.9);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        letter-spacing: 0.05rem;
+        margin-left: 8px;
+      }
+
+      .quantity-badge.low {
+        background: rgba(255, 180, 100, 0.1);
+        border-color: rgba(255, 180, 100, 0.2);
+        color: rgba(255, 180, 100, 0.9);
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        letter-spacing: 0.05rem;
+        margin-left: 8px;
+      }
+
+      .status-badge.available {
+        background: rgba(100, 200, 150, 0.1);
+        border: 1px solid rgba(100, 200, 150, 0.2);
+        color: rgba(100, 200, 150, 0.9);
+      }
+
+      .status-badge.unavailable {
+        background: rgba(255, 100, 100, 0.1);
+        border: 1px solid rgba(255, 100, 100, 0.2);
+        color: rgba(255, 100, 100, 0.9);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+        opacity: 0.5;
+      }
+
+      .section-title {
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 1.1rem;
+        font-weight: 500;
+        letter-spacing: 0.05rem;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 238, 226, 0.15);
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      @media (max-width: 768px) {
+        .brand-title {
+          font-size: 2rem;
+        }
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .loading-spinner {
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-top: 2px solid rgba(255, 238, 226, 0.8);
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        animation: spin 1s linear infinite;
+        margin: 40px auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .flex-between {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 8px;
+      }
+
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background: #0a0a0a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
+        width: 90%;
+        max-width: 400px;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .stat-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: rgba(255, 238, 226, 0.9);
+      }
+
+      .stat-label {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.1rem;
+        margin-top: 4px;
+      }
+
+      /* Intelligence Layer Styles */
+      .tab-container {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 16px;
+      }
+
+      .tab-btn {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.8rem;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .tab-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .tab-btn.active {
+        background: rgba(255, 238, 226, 0.1);
+        border-color: rgba(255, 238, 226, 0.3);
+        color: rgba(255, 238, 226, 0.95);
+      }
+
+      .reconciliation-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        letter-spacing: 0.05rem;
+        margin-right: 8px;
+      }
+
+      .reconciliation-badge.verified {
+        background: rgba(100, 200, 150, 0.1);
+        border: 1px solid rgba(100, 200, 150, 0.2);
+        color: rgba(100, 200, 150, 0.9);
+      }
+
+      .reconciliation-badge.discrepancy {
+        background: rgba(255, 100, 100, 0.1);
+        border: 1px solid rgba(255, 100, 100, 0.2);
+        color: rgba(255, 100, 100, 0.9);
+      }
+
+      .reconciliation-badge.uncertain {
+        background: rgba(255, 200, 100, 0.1);
+        border: 1px solid rgba(255, 200, 100, 0.2);
+        color: rgba(255, 200, 100, 0.9);
+      }
+
+      .category-breakdown {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .category-item {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+        padding: 12px;
+        text-align: center;
+      }
+
+      .category-name {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 4px;
+      }
+
+      .category-count {
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: rgba(255, 238, 226, 0.9);
+      }
+
+      .alert-item {
+        background: rgba(255, 100, 100, 0.05);
+        border: 1px solid rgba(255, 100, 100, 0.15);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .alert-item.warning {
+        background: rgba(255, 200, 100, 0.05);
+        border-color: rgba(255, 200, 100, 0.15);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      function App() {
+        const [inventory, setInventory] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [editingItem, setEditingItem] = useState(null);
+        const [formData, setFormData] = useState({
+          name: "",
+          quantity: "",
+          category: "",
+          status: "",
+        });
+        const [activeView, setActiveView] = useState("inventory");
+
+        // Mock reconciliation data (from ML pipeline)
+        const [reconciliation] = useState({
+          verified: 2,
+          discrepancies: 1,
+          uncertain: 1,
+          items: [
+            { name: "Arduino Kit", type: "verified", confidence: 0.95, scene: "shelf_01" },
+            { name: "USB Cable", type: "uncertain", confidence: 0.72, scene: "shelf_01" },
+            { name: "Monitor Stand", type: "discrepancy", confidence: 0.91, scene: "shelf_02", issue: "DB shows 0 but item observed" },
+          ]
+        });
+
+        const categories = [
+          "Hardware",
+          "Software",
+          "Electronics",
+          "Furniture",
+          "Office Supplies",
+          "Other",
+        ];
+
+        useEffect(() => {
+          fetchInventory();
+        }, []);
+
+        const fetchInventory = async () => {
+          try {
+            const res = await fetch("/api/inventory");
+            const data = await res.json();
+            setInventory(data);
+          } catch (error) {
+            console.error("Failed to fetch inventory:", error);
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        const handleSubmit = async (e) => {
+          e.preventDefault();
+          if (!formData.name || !formData.quantity || !formData.category || !formData.status) {
+            alert("please fill in all fields");
+            return;
+          }
+
+          try {
+            const res = await fetch("/api/inventory", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(formData),
+            });
+            const newItem = await res.json();
+            setInventory([...inventory, newItem]);
+            setFormData({ name: "", quantity: "", category: "", status: "" });
+          } catch (error) {
+            console.error("Failed to add item:", error);
+          }
+        };
+
+        const handleDelete = async (id) => {
+          try {
+            await fetch(`/api/inventory/${id}`, { method: "DELETE" });
+            setInventory(inventory.filter((item) => item.id !== id));
+          } catch (error) {
+            console.error("Failed to delete item:", error);
+          }
+        };
+
+        const handleEdit = (item) => {
+          setEditingItem({ ...item });
+        };
+
+        const handleUpdate = async () => {
+          try {
+            const res = await fetch(`/api/inventory/${editingItem.id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(editingItem),
+            });
+            const updated = await res.json();
+            setInventory(
+              inventory.map((item) =>
+                item.id === updated.id ? updated : item,
+              ),
+            );
+            setEditingItem(null);
+          } catch (error) {
+            console.error("Failed to update item:", error);
+          }
+        };
+
+        const totalItems = inventory.reduce(
+          (sum, item) => sum + item.quantity,
+          0,
+        );
+        const uniqueCategories = [
+          ...new Set(inventory.map((item) => item.category)),
+        ].length;
+        const lowStockItems = inventory.filter(
+          (item) => item.quantity < 10,
+        ).length;
+
+        // Group by category for data science insights
+        const categoryBreakdown = inventory.reduce((acc, item) => {
+          acc[item.category] = (acc[item.category] || 0) + item.quantity;
+          return acc;
+        }, {});
+
+        const lowStockList = inventory.filter(item => item.quantity < 10);
+
+        return (
+          <div
+            style={{
+              maxWidth: "900px",
+              margin: "0 auto",
+              padding: "24px",
+              minHeight: "100vh",
+            }}
+          >
+            {/* Header */}
+            <div
+              style={{
+                textAlign: "center",
+                marginBottom: "32px",
+                marginTop: "32px",
+              }}
+            >
+              <h1 className="brand-title">inventory</h1>
+              <p className="brand-subtitle">manage and track your items</p>
+            </div>
+
+            {/* Tabs */}
+            <div className="tab-container">
+              <button
+                className={`tab-btn ${activeView === 'inventory' ? 'active' : ''}`}
+                onClick={() => setActiveView('inventory')}
+              >
+                📦 inventory
+              </button>
+              <button
+                className={`tab-btn ${activeView === 'insights' ? 'active' : ''}`}
+                onClick={() => setActiveView('insights')}
+              >
+                📊 data science
+              </button>
+              <button
+                className={`tab-btn ${activeView === 'reconciliation' ? 'active' : ''}`}
+                onClick={() => setActiveView('reconciliation')}
+              >
+                🔍 ml status
+              </button>
+            </div>
+
+            {/* Stats */}
+            <div className="stats-row">
+              <div className="stat-card">
+                <div className="stat-value">{inventory.length}</div>
+                <div className="stat-label">products</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-value">{totalItems}</div>
+                <div className="stat-label">total units</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-value">{lowStockItems}</div>
+                <div className="stat-label">low stock</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-value">{reconciliation.discrepancies}</div>
+                <div className="stat-label">discrepancies</div>
+              </div>
+            </div>
+
+            {/* Data Science Insights View */}
+            {activeView === 'insights' && (
+              <div className="glass-card" style={{ padding: "24px", marginBottom: "24px" }}>
+                <h2 className="section-title">📊 data science insights</h2>
+
+                <div style={{ marginBottom: "24px" }}>
+                  <h3 style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.8)", marginBottom: "12px" }}>units by category</h3>
+                  <div className="category-breakdown">
+                    {Object.entries(categoryBreakdown).map(([category, count]) => (
+                      <div key={category} className="category-item">
+                        <div className="category-name">{category.toLowerCase()}</div>
+                        <div className="category-count">{count}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {lowStockList.length > 0 && (
+                  <div>
+                    <h3 style={{ fontSize: "0.9rem", color: "rgba(255,200,100,0.9)", marginBottom: "12px" }}>⚠️ low stock alerts</h3>
+                    {lowStockList.map(item => (
+                      <div key={item.id} className="alert-item warning">
+                        <span>{item.name.toLowerCase()}</span>
+                        <span style={{ color: "rgba(255,200,100,0.9)" }}>{item.quantity} units</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ML Reconciliation View */}
+            {activeView === 'reconciliation' && (
+              <div className="glass-card" style={{ padding: "24px", marginBottom: "24px" }}>
+                <h2 className="section-title">🔍 ml reconciliation status</h2>
+
+                <div className="stats-row" style={{ marginBottom: "24px" }}>
+                  <div className="stat-card">
+                    <div className="stat-value" style={{ color: "rgba(100,200,150,0.9)" }}>{reconciliation.verified}</div>
+                    <div className="stat-label">verified</div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-value" style={{ color: "rgba(255,100,100,0.9)" }}>{reconciliation.discrepancies}</div>
+                    <div className="stat-label">discrepancies</div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-value" style={{ color: "rgba(255,200,100,0.9)" }}>{reconciliation.uncertain}</div>
+                    <div className="stat-label">uncertain</div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.8)", marginBottom: "12px" }}>shelf observation results</h3>
+                  {reconciliation.items.map((item, idx) => (
+                    <div key={idx} className={`alert-item ${item.type === 'uncertain' ? 'warning' : ''}`}
+                         style={item.type === 'verified' ? { background: "rgba(100,200,150,0.05)", borderColor: "rgba(100,200,150,0.15)" } : {}}>
+                      <div>
+                        <span className={`reconciliation-badge ${item.type}`}>{item.type}</span>
+                        <span style={{ color: "rgba(255,255,255,0.9)" }}>{item.name.toLowerCase()}</span>
+                      </div>
+                      <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.5)" }}>
+                        conf: {(item.confidence * 100).toFixed(0)}%
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <p style={{ marginTop: "16px", fontSize: "0.75rem", color: "rgba(255,255,255,0.4)" }}>
+                  Run <code style={{ background: "rgba(255,255,255,0.1)", padding: "2px 6px", borderRadius: "4px" }}>python ml/reconciliation.py</code> to update
+                </p>
+              </div>
+            )}
+
+            {/* Inventory View */}
+            {activeView === 'inventory' && (
+              <>
+            {/* Add Item Form */}
+            <div
+              className="glass-card"
+              style={{ padding: "24px", marginBottom: "24px" }}
+            >
+              <h2 className="section-title">add new item</h2>
+              <form onSubmit={handleSubmit}>
+                <div className="form-row">
+                  <div>
+                    <label className="label-text">item name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. wireless keyboard"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="label-text">quantity</label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      min="0"
+                      value={formData.quantity}
+                      onChange={(e) =>
+                        setFormData({ ...formData, quantity: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="label-text">category</label>
+                    <select
+                      value={formData.category}
+                      onChange={(e) =>
+                        setFormData({ ...formData, category: e.target.value })
+                      }
+                    >
+                      <option value="">choose...</option>
+                      {categories.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat.toLowerCase()}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="label-text">status</label>
+                    <select
+                      value={formData.status}
+                      onChange={(e) =>
+                        setFormData({ ...formData, status: e.target.value })
+                      }
+                    >
+                      <option value="">choose...</option>
+                      <option value="Available">available</option>
+                      <option value="Unavailable">unavailable</option>
+                    </select>
+                  </div>
+                </div>
+                <button type="submit" className="action-button">
+                  add item
+                </button>
+              </form>
+            </div>
+
+            {/* Inventory List */}
+            <div className="glass-card" style={{ padding: "24px" }}>
+              <h2 className="section-title">inventory items</h2>
+
+              {loading ? (
+                <div className="loading-spinner"></div>
+              ) : inventory.length === 0 ? (
+                <div className="empty-state">
+                  <div className="empty-state-icon">📦</div>
+                  <p>no items in inventory</p>
+                  <p style={{ fontSize: "0.8rem", marginTop: "8px" }}>
+                    add your first item above
+                  </p>
+                </div>
+              ) : (
+                inventory.map((item) => (
+                  <div key={item.id} className="item-card">
+                    <div className="flex-between">
+                      <div>
+                        <div className="item-name">
+                          {item.name.toLowerCase()}
+                        </div>
+                        <div className="item-meta">
+                          <span className="category-badge">
+                            {item.category.toLowerCase()}
+                          </span>
+                          <span
+                            className={`quantity-badge ${item.quantity < 10 ? "low" : ""}`}
+                          >
+                            {item.quantity} units
+                          </span>
+                          <span
+                            className={`status-badge ${item.status?.toLowerCase() || 'available'}`}
+                          >
+                            {item.status?.toLowerCase() || 'available'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="button-group">
+                        <button
+                          className="action-button secondary"
+                          onClick={() => handleEdit(item)}
+                        >
+                          edit
+                        </button>
+                        <button
+                          className="action-button secondary danger"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            </>
+            )}
+
+            {/* Edit Modal */}
+            {editingItem && (
+              <div
+                className="modal-overlay"
+                onClick={() => setEditingItem(null)}
+              >
+                <div
+                  className="modal-content"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h2 className="section-title">edit item</h2>
+                  <div style={{ marginBottom: "16px" }}>
+                    <label className="label-text">item name</label>
+                    <input
+                      type="text"
+                      value={editingItem.name}
+                      onChange={(e) =>
+                        setEditingItem({ ...editingItem, name: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div style={{ marginBottom: "16px" }}>
+                    <label className="label-text">quantity</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={editingItem.quantity}
+                      onChange={(e) =>
+                        setEditingItem({
+                          ...editingItem,
+                          quantity: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div style={{ marginBottom: "16px" }}>
+                    <label className="label-text">category</label>
+                    <select
+                      value={editingItem.category}
+                      onChange={(e) =>
+                        setEditingItem({
+                          ...editingItem,
+                          category: e.target.value,
+                        })
+                      }
+                    >
+                      {categories.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat.toLowerCase()}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: "16px" }}>
+                    <label className="label-text">status</label>
+                    <select
+                      value={editingItem.status}
+                      onChange={(e) =>
+                        setEditingItem({
+                          ...editingItem,
+                          status: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="Available">available</option>
+                      <option value="Unavailable">unavailable</option>
+                    </select>
+                  </div>
+                  <div
+                    className="button-group"
+                    style={{ justifyContent: "flex-end" }}
+                  >
+                    <button
+                      className="action-button secondary"
+                      onClick={() => setEditingItem(null)}
+                    >
+                      cancel
+                    </button>
+                    <button
+                      className="action-button secondary"
+                      onClick={handleUpdate}
+                    >
+                      save
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>

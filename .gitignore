@@ -1,0 +1,12 @@
+node_modules/
+.env
+.DS_Store
+*.log
+analysis/inventory_chart.png
+analysis/inventory_summary.json
+ml/predictions/
+ml/audit_log.jsonl
+ml/reconciliation_results.json
+llm/prompt_template.json
+__pycache__/
+*.pyc
